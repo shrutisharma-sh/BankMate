@@ -95,3 +95,124 @@ body {
   height: 100%;
   object-fit: cover;
 }
+.info-card {
+  background: #1a2b45;
+  border: 2px solid #4fd1c5;
+  border-radius: 16px;
+  padding: 24px 32px;
+  width: min(90vw, 450px);
+  margin-bottom: 1.5em;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 1.2rem;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: #94a3b8;
+}
+
+.info-value {
+  color: white;
+  font-weight: 600;
+}
+
+.privacy-note {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  max-width: 400px;
+  text-align: center;
+  margin-bottom: 2em;
+}
+
+.loading-text {
+  font-size: 1.3rem;
+  color: #4fd1c5;
+  margin-top: 1em;
+}
+
+.staff-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #1a2b45;
+  border: 2px solid #94a3b8;
+  color: #cbd5e0;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.staff-btn:hover {
+  border-color: #4fd1c5;
+  color: #4fd1c5;
+}
+
+.number-display {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 2em;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 420px;
+}
+
+.digit-slot {
+  width: 34px;
+  height: 48px;
+  border-bottom: 3px solid #4fd1c5;
+  font-size: 1.8rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.digit-slot.filled {
+  color: white;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 1em;
+}
+
+.key-btn {
+  width: 90px;
+  height: 90px;
+  border-radius: 18px;
+  border: 2px solid #4fd1c5;
+  background: #1a2b45;
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.key-btn:hover {
+  background: #4fd1c5;
+  color: #0f1c2e;
+}
+
+.key-btn:active {
+  transform: scale(0.95);
+}
+
+.key-btn-action {
+  background: #2d3f5c;
+  font-size: 1.6rem;
+}

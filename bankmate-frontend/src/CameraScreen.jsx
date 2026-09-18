@@ -7,12 +7,12 @@ function CameraScreen({ language, onCaptured, onBack }) {
   const [error, setError] = useState(null);
   const [capturedImage, setCapturedImage] = useState(null);
 
-  // Turn on the camera when this screen loads
+  
   useEffect(() => {
     async function startCamera() {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" }, // prefers back camera on phones
+          video: { facingMode: "environment" }, 
         });
         setStream(mediaStream);
         if (videoRef.current) {
@@ -24,13 +24,13 @@ function CameraScreen({ language, onCaptured, onBack }) {
     }
     startCamera();
 
-    // Cleanup: turn off camera when leaving this screen
+    
     return () => {
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, []);
 
   function handleScan() {
@@ -52,7 +52,7 @@ function CameraScreen({ language, onCaptured, onBack }) {
   }
 
   function handleUsePhoto() {
-    onCaptured(capturedImage); // Phase 4 will send this to the backend
+    onCaptured(capturedImage); 
   }
 
   const t = (hi, en) => (language === "hi" ? hi : en);
