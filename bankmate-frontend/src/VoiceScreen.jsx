@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
+import { Mic } from "lucide-react";
+import Header from "./Header";
 
-function VoiceScreen({ language, onIntentDetected, onBack }) {
+function VoiceScreen({ language, onIntentDetected, onBack, onStaff }) {
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
   const recognitionRef = useRef(null);
@@ -114,49 +116,48 @@ function VoiceScreen({ language, onIntentDetected, onBack }) {
   }
 
   return (
-    <div className="kiosk">
-      <h2 className="title" style={{ fontSize: "2.2rem" }}>
-        {t("आप क्या करना चाहते हैं?", "What would you like to do?")}
-      </h2>
+    <>
+      <Header lang={language} onStaff={onStaff} />
+      <div className="bm-screen">
+        <h1 className="bm-h1">
+          {t("आप क्या करना चाहते हैं?", "What services you want?")}
+        </h1>
 
-      {processing ? (
-        <p className="loading-text">{t("समझ रहे हैं...", "Understanding...")}</p>
-      ) : (
-        <div>
-          <button
-            className={"mic-btn" + (recording ? " recording" : "")}
-            onClick={recording ? stopRecording : startRecording}
-          >
-            🎤
-          </button>
-          <p className="mic-hint">
-            {recording
-              ? t("सुन रहे हैं...", "Listening...")
-              : t("बोलने के लिए दबाएं", "Tap to speak")}
-          </p>
-          <p className="example-text">
-            {t(
-              'उदाहरण: "मुझे बीस हज़ार रुपये निकालने हैं" या "मोबाइल नंबर अपडेट करना है"',
-              'Example: "Withdraw 20000 rupees" or "Update mobile number"'
-            )}
-          </p>
-        </div>
-      )}
+        {processing ? (
+          <p className="bm-sub">{t("समझ रहे हैं...", "Understanding...")}</p>
+        ) : (
+          <>
+            <p className="bm-sub">{t("बोलिए ज़ोर से।", "Speak loudly.")}</p>
 
-      <button
-        onClick={onBack}
-        style={{
-          marginTop: "2em",
-          background: "none",
-          border: "none",
-          color: "#94a3b8",
-          fontSize: "1rem",
-          cursor: "pointer",
-        }}
-      >
-        {t("← वापस", "← Back")}
-      </button>
-    </div>
+            <div className={`bm-mic-wrap ${recording ? "listening" : ""}`}>
+              <button
+                className="bm-mic"
+                onClick={recording ? stopRecording : startRecording}
+                aria-label={t("बोलने के लिए दबाएं", "Tap to speak")}
+              >
+                <Mic size={32} aria-hidden="true" />
+              </button>
+            </div>
+
+            <p className="bm-label">
+              {recording
+                ? t("सुन रहे हैं...", "Listening...")
+                : t("बोलने के लिए दबाएं", "Tap to speak")}
+            </p>
+            <p className="bm-note">
+              {t(
+                'उदाहरण: "मुझे बीस हज़ार रुपये निकालने हैं" या "मोबाइल नंबर अपडेट करना है"',
+                'Example: "Withdraw 20000 rupees" or "Update mobile number"'
+              )}
+            </p>
+          </>
+        )}
+
+        <button className="bm-btn bm-btn-outline" onClick={onBack}>
+          {t("← वापस", "← Back")}
+        </button>
+      </div>
+    </>
   );
 }
 

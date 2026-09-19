@@ -1,6 +1,6 @@
 import { useState } from "react";
-import "./App.css";
-import "./theme.css"; 
+
+import "./theme.css";
 import WelcomeScreen from "./WelcomeScreen";
 import CameraScreen from "./CameraScreen";
 import PassbookScreen from "./PassbookScreen";
@@ -8,6 +8,7 @@ import VoiceScreen from "./VoiceScreen";
 import ConfirmScreen from "./ConfirmScreen";
 import FormScreen from "./FormScreen";
 import StaffScreen from "./StaffScreen";
+import Header from "./Header";
 import { scanPassbook } from "./api";
 import MobileNumberScreen from "./MobileNumberScreen";
 import MobileFormScreen from "./MobileFormScreen";
@@ -48,7 +49,7 @@ function App() {
   }
 
   let content;
-  // true for screens already moved to the new UI (they live inside .bm-app)
+  
   let newUI = false;
 
   if (screen === "camera") {
@@ -63,32 +64,49 @@ function App() {
       />
     );
   } else if (screen === "scanning") {
+    newUI = true;
     content = (
-      <div className="kiosk">
-        <h2 className="title" style={{ fontSize: "2rem" }}>
-          {t("प्रोसेस हो रहा है...", "Processing...")}
-        </h2>
-        <p className="loading-text">{t("कृपया प्रतीक्षा करें", "Please wait")}</p>
-      </div>
+      <>
+        <Header lang={language} onStaff={() => setScreen("staff")} />
+        <div className="bm-screen">
+          <h1 className="bm-h1">
+            {t("आपकी जानकारी निकाली जा रही है...", "Extracting your details...")}
+          </h1>
+          <div className="bm-progress">
+            <div className="bm-progress-bar" />
+          </div>
+          <div className="bm-note">
+            {t(
+              "आपकी पासबुक सुरक्षित रूप से प्रोसेस की जाती है और सेव नहीं की जाती।",
+              "Your passbook is processed securely and is not stored."
+            )}
+          </div>
+        </div>
+      </>
     );
   } else if (screen === "passbook" && passbookData) {
+    newUI = true;
     content = (
       <PassbookScreen
         language={language}
         passbookData={passbookData}
         onBack={() => setScreen("camera")}
         onContinue={() => setScreen("voice")}
+        onStaff={() => setScreen("staff")}
       />
     );
   } else if (screen === "voice") {
+    newUI = true;
     content = (
       <VoiceScreen
         language={language}
         onIntentDetected={handleIntentDetected}
         onBack={() => setScreen("passbook")}
+        onStaff={() => setScreen("staff")}
       />
     );
   } else if (screen === "confirm" && intentData) {
+    newUI = true;
     content = (
       <ConfirmScreen
         language={language}
@@ -97,10 +115,11 @@ function App() {
           setScreen(intentData.intent === "MOBILE_UPDATE" ? "mobileNumber" : "form")
         }
         onSpeakAgain={() => setScreen("voice")}
-        onBack={() => setScreen("voice")}
+        onStaff={() => setScreen("staff")}
       />
     );
   } else if (screen === "form" && passbookData && intentData) {
+    newUI = true;
     content = (
       <FormScreen
         language={language}
@@ -108,9 +127,11 @@ function App() {
         intentData={intentData}
         onStartOver={resetToStart}
         onBack={() => setScreen("confirm")}
+        onStaff={() => setScreen("staff")}
       />
     );
   } else if (screen === "mobileNumber") {
+    newUI = true;
     content = (
       <MobileNumberScreen
         language={language}
@@ -119,9 +140,11 @@ function App() {
           setScreen("mobileForm");
         }}
         onBack={() => setScreen("confirm")}
+        onStaff={() => setScreen("staff")}
       />
     );
   } else if (screen === "mobileForm" && passbookData && newMobileNumber) {
+    newUI = true;
     content = (
       <MobileFormScreen
         language={language}
@@ -129,9 +152,11 @@ function App() {
         newMobileNumber={newMobileNumber}
         onStartOver={resetToStart}
         onBack={() => setScreen("mobileNumber")}
+        onStaff={() => setScreen("staff")}
       />
     );
-  } else if (screen === "staff") {
+    } else if (screen === "staff") {
+    newUI = true;
     content = <StaffScreen language={language} onBack={() => setScreen("welcome")} />;
   } else {
     // welcome (default)
@@ -146,18 +171,13 @@ function App() {
     );
   }
 
-  // The floating staff button is only needed on screens not yet migrated
-  // (migrated screens have "Call Staff" in their header).
-  const showFloatingStaff = !newUI && screen !== "staff" && language;
+  
+  
 
   return (
     <>
       {newUI ? <div className="bm-app">{content}</div> : content}
-      {showFloatingStaff && (
-        <button className="staff-btn" onClick={() => setScreen("staff")}>
-          {t("सहायता चाहिए?", "Need Staff Assistance?")}
-        </button>
-      )}
+      
     </>
   );
 }

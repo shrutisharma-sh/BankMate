@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { Smartphone, Volume2, Delete } from "lucide-react";
+import Header from "./Header";
 
-function MobileNumberScreen({ language, onNumberConfirmed, onBack }) {
+function MobileNumberScreen({ language, onNumberConfirmed, onBack, onStaff }) {
   const [digits, setDigits] = useState("");
   const [confirming, setConfirming] = useState(false);
 
@@ -45,93 +47,80 @@ function MobileNumberScreen({ language, onNumberConfirmed, onBack }) {
   const displaySlots = Array.from({ length: 10 }, (_, i) => digits[i] || "_");
 
   return (
-    <div className="kiosk">
-      <div style={{ fontSize: "3.5rem", marginBottom: "0.2em" }}>📱</div>
+    <>
+      <Header lang={language} onStaff={onStaff} />
+      <div className="bm-screen">
+        <Smartphone size={40} className="bm-service-icon" aria-hidden="true" />
 
-      <h2 className="title" style={{ fontSize: "2rem" }}>
-        {confirming
-          ? t("क्या यह सही है?", "Is this correct?")
-          : t("नया मोबाइल नंबर डालें", "Enter new mobile number")}
-      </h2>
+        <h1 className="bm-h2">
+          {confirming
+            ? t("क्या यह सही है?", "Is this correct?")
+            : t("नया मोबाइल नंबर डालें", "Enter new mobile number")}
+        </h1>
 
-      <div className="number-display">
-        {displaySlots.map((d, i) => (
-          <span key={i} className={`digit-slot ${d !== "_" ? "filled" : ""}`}>
-            {d}
-          </span>
-        ))}
-      </div>
+        <div className="bm-display">
+          {displaySlots.map((d, i) => (
+            <span key={i} className={`bm-display-slot ${d !== "_" ? "filled" : ""}`}>
+              {d}
+            </span>
+          ))}
+        </div>
 
-      {!confirming ? (
-        <>
-          <div className="keypad">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-              <button
-                key={num}
-                className="key-btn"
-                onClick={() => pressDigit(num.toString())}
-              >
-                {num}
+        {!confirming ? (
+          <>
+            <div className="bm-keypad">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                <button
+                  key={num}
+                  className="bm-key"
+                  onClick={() => pressDigit(num.toString())}
+                >
+                  {num}
+                </button>
+              ))}
+              <button className="bm-key" onClick={pressBackspace} aria-label="Backspace">
+                <Delete size={20} aria-hidden="true" />
               </button>
-            ))}
-            <button className="key-btn key-btn-action" onClick={pressBackspace}>
-              ⌫
-            </button>
-            <button className="key-btn" onClick={() => pressDigit("0")}>
-              0
-            </button>
+              <button className="bm-key" onClick={() => pressDigit("0")}>
+                0
+              </button>
+              <button
+                className="bm-key"
+                onClick={() => speakNumber(digits || "0")}
+                aria-label="Speak number"
+              >
+                <Volume2 size={20} aria-hidden="true" />
+              </button>
+            </div>
+
             <button
-              className="key-btn key-btn-action"
-              onClick={() => speakNumber(digits || "0")}
+              className="bm-btn bm-btn-primary"
+              disabled={digits.length !== 10}
+              onClick={handleReadBack}
             >
-              🔊
+              {t("आगे बढ़ें", "Continue")}
             </button>
-          </div>
-
-          <button
-            className="start-btn"
-            disabled={digits.length !== 10}
-            onClick={handleReadBack}
-            style={{ marginTop: "1.5em" }}
-          >
-            {t("आगे बढ़ें", "CONTINUE")}
-          </button>
-        </>
-      ) : (
-        <>
-          <button
-            className="start-btn"
-            style={{ marginBottom: "1em" }}
-            onClick={() => speakNumber(digits)}
-          >
-            🔊 {t("फिर से सुनें", "HEAR AGAIN")}
-          </button>
-
-          <div className="lang-toggle">
-            <button className="lang-btn" onClick={handleReEnter}>
-              {t("फिर से डालें", "RE-ENTER")}
+          </>
+        ) : (
+          <>
+            <button className="bm-btn bm-btn-outline" onClick={() => speakNumber(digits)}>
+              <Volume2 size={20} aria-hidden="true" /> {t("फिर से सुनें", "Hear Again")}
             </button>
-            <button className="start-btn" onClick={handleConfirm}>
-              {t("हाँ, सही है", "YES, CORRECT")}
-            </button>
-          </div>
-        </>
-      )}
 
-      <button
-        onClick={onBack}
-        style={{
-          marginTop: "2em",
-          background: "none",
-          border: "none",
-          color: "#94a3b8",
-          fontSize: "1rem",
-          cursor: "pointer",
-        }}
-      >
-        {t("← वापस", "← Back")}
-      </button>
-    </div>
+            <button className="bm-btn bm-btn-primary" onClick={handleConfirm}>
+              {t("हाँ, सही है", "Yes, Correct")}
+            </button>
+            <button className="bm-btn bm-btn-outline" onClick={handleReEnter}>
+              {t("फिर से डालें", "Re-enter")}
+            </button>
+          </>
+        )}
+
+        <button className="bm-btn bm-btn-outline" onClick={onBack}>
+          {t("← वापस", "← Back")}
+        </button>
+      </div>
+    </>
   );
 }
 
