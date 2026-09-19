@@ -13,6 +13,7 @@ import { scanPassbook } from "./api";
 import MobileNumberScreen from "./MobileNumberScreen";
 import MobileFormScreen from "./MobileFormScreen";
 
+//crazyy shit
 function App() {
   const [language, setLanguage] = useState(null);
   const [screen, setScreen] = useState("welcome");

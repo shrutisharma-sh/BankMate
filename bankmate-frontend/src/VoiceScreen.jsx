@@ -33,8 +33,14 @@ function VoiceScreen({ language, onIntentDetected, onBack, onStaff }) {
   function detectIntent(transcript) {
     const text = transcript.toLowerCase();
 
-    const withdrawalWords = ["withdraw", "nikal", "nikalne", "nikalna", "cash", "paisa", "paise", "rupee", "rupaye"];
-    const mobileWords = ["mobile", "number", "nambar", "phone", "update"];
+    const withdrawalWords = [
+  "withdraw", "nikal", "nikalne", "nikalna", "cash", "paisa", "paise", "rupee", "rupaye",
+  "निकाल", "निकालना", "निकालने", "पैसा", "पैसे", "रुपये", "रुपया", "नकद"
+];
+const mobileWords = [
+  "mobile", "number", "nambar", "phone", "update",
+  "मोबाइल", "नंबर", "नम्बर", "फोन", "अपडेट", "बदलना", "बदलें"
+];
 
     const hasWithdrawal = withdrawalWords.some(function (w) {
       return text.includes(w);
@@ -96,6 +102,7 @@ function VoiceScreen({ language, onIntentDetected, onBack, onStaff }) {
     };
 
     recognition.onerror = function () {
+      console.error("SPEECH ERROR:", event.error);
       setRecording(false);
       alert(t("सुन नहीं पाया, फिर कोशिश करें", "Couldn't hear you, please try again"));
     };
