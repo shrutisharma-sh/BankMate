@@ -1,70 +1,96 @@
-function ConfirmScreen({ language, intentData, onConfirm, onSpeakAgain, onBack }) {
-  const t = (hi, en) => (language === "hi" ? hi : en);
+import { Banknote, Check, Info, Mic, Smartphone } from "lucide-react";
+import Header from "./Header";
 
-  const isUnknown = intentData.intent === "UNKNOWN";
+const T = {
+  en: {
+    heading: "Here is what I understood",
+    question: "Is this correct?",
+    yes: "Yes, Continue",
+    again: "Speak Again",
+    WITHDRAWAL: { title: "Withdraw Cash", desc: "Get cash from your account" },
+    MOBILE_UPDATE: {
+      title: "Update Mobile Number",
+      desc: "Change your registered mobile number",
+    },
+    unknownTitle: "Sorry, I did not understand",
+    unknownDesc:
+      "Please try again and speak clearly. For example: \"I want to withdraw money\" or \"Update my mobile number\".",
+  },
+  hi: {
+    heading: "मैंने यह समझा",
+    question: "क्या यह सही है?",
+    yes: "हाँ, आगे बढ़ें",
+    again: "फिर से बोलें",
+    WITHDRAWAL: { title: "पैसे निकालें", desc: "अपने खाते से नकद निकालें" },
+    MOBILE_UPDATE: {
+      title: "मोबाइल नंबर बदलें",
+      desc: "अपना रजिस्टर्ड मोबाइल नंबर बदलें",
+    },
+    unknownTitle: "माफ़ कीजिए, समझ नहीं आया",
+    unknownDesc:
+      "कृपया साफ़ बोलकर फिर कोशिश करें। जैसे: \"पैसे निकालने हैं\" या \"मोबाइल नंबर बदलना है\"।",
+  },
+};
+
+export default function ConfirmScreen({
+  language,
+  intentData,
+  onConfirm,
+  onSpeakAgain,
+  onStaff,
+}) {
+  const lang = language || "en";
+  const t = T[lang] || T.en;
+  const intent = intentData?.intent;
+  const known = intent === "WITHDRAWAL" || intent === "MOBILE_UPDATE";
+  const isMobile = intent === "MOBILE_UPDATE";
 
   return (
-    <div className="kiosk">
-      <h2 className="title" style={{ fontSize: "2.2rem" }}>
-        {isUnknown
-          ? t("समझ नहीं आया", "I couldn't understand")
-          : t("मैंने समझा:", "I understood:")}
-      </h2>
+    <>
+      <Header lang={lang} onStaff={onStaff} />
 
-      {isUnknown ? (
-        <p style={{ fontSize: "1.3rem", color: "#f87171", marginBottom: "2em" }}>
-          {t(
-            "अनुरोध स्पष्ट रूप से समझ नहीं आया।",
-            "I couldn't understand the request clearly."
-          )}
-        </p>
-      ) : (
-        <div className="info-card">
-          <div className="info-row">
-            <span className="info-label">{t("कार्य", "Task")}</span>
-            <span className="info-value">
-              {intentData.intent === "WITHDRAWAL"
-                ? t("निकासी", "Withdrawal")
-                : t("मोबाइल अपडेट", "Mobile Update")}
-            </span>
-          </div>
-          {intentData.amount && (
-            <div className="info-row">
-              <span className="info-label">{t("राशि", "Amount")}</span>
-              <span className="info-value">
-                ₹{intentData.amount.toLocaleString("en-IN")}
-              </span>
+      <div className="bm-screen" style={{ justifyContent: "center" }}>
+        {known ? (
+          <>
+            <h1 className="bm-h2">{t.heading}</h1>
+
+            <div className={`bm-service ${isMobile ? "bm-service--green" : ""}`}>
+              {isMobile ? (
+                <Smartphone className="bm-service-icon" aria-hidden="true" />
+              ) : (
+                <Banknote className="bm-service-icon" aria-hidden="true" />
+              )}
+              <div className="bm-service-body">
+                <div className="bm-service-title">{t[intent].title}</div>
+                <div className="bm-service-desc">{t[intent].desc}</div>
+              </div>
             </div>
-          )}
-        </div>
-      )}
 
-      <div className="lang-toggle">
-        {!isUnknown && (
-          <button className="start-btn" onClick={onConfirm}>
-            {t("हाँ, आगे बढ़ें", "YES, CONTINUE")}
-          </button>
+            <p className="bm-label">{t.question}</p>
+
+            <button className="bm-btn bm-btn-primary" onClick={onConfirm}>
+              <Check size={22} aria-hidden="true" /> {t.yes}
+            </button>
+            <button className="bm-btn bm-btn-outline" onClick={onSpeakAgain}>
+              <Mic size={20} aria-hidden="true" /> {t.again}
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="bm-note bm-note--warn">
+              <Info aria-hidden="true" />
+              <div>
+                <div style={{ fontSize: 17, fontWeight: 800 }}>{t.unknownTitle}</div>
+                <div style={{ fontWeight: 500, marginTop: 4 }}>{t.unknownDesc}</div>
+              </div>
+            </div>
+
+            <button className="bm-btn bm-btn-primary" onClick={onSpeakAgain}>
+              <Mic size={20} aria-hidden="true" /> {t.again}
+            </button>
+          </>
         )}
-        <button className="lang-btn" onClick={onSpeakAgain}>
-          {t("फिर से बोलें", "SPEAK AGAIN")}
-        </button>
       </div>
-
-      <button
-        onClick={onBack}
-        style={{
-          marginTop: "2em",
-          background: "none",
-          border: "none",
-          color: "#94a3b8",
-          fontSize: "1rem",
-          cursor: "pointer",
-        }}
-      >
-        {t("← वापस", "← Back")}
-      </button>
-    </div>
+    </>
   );
 }
-
-export default ConfirmScreen;

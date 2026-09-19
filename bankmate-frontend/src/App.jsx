@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "./App.css";
+import "./theme.css"; 
+import WelcomeScreen from "./WelcomeScreen";
 import CameraScreen from "./CameraScreen";
 import PassbookScreen from "./PassbookScreen";
 import VoiceScreen from "./VoiceScreen";
@@ -46,11 +48,16 @@ function App() {
   }
 
   let content;
+  // true for screens already moved to the new UI (they live inside .bm-app)
+  let newUI = false;
 
   if (screen === "camera") {
+    newUI = true;
     content = (
       <CameraScreen
         language={language}
+        scanError={error}
+        onStaff={() => setScreen("staff")}
         onBack={() => setScreen("welcome")}
         onCaptured={handleCaptured}
       />
@@ -87,8 +94,8 @@ function App() {
         language={language}
         intentData={intentData}
         onConfirm={() =>
-  setScreen(intentData.intent === "MOBILE_UPDATE" ? "mobileNumber" : "form")
-}
+          setScreen(intentData.intent === "MOBILE_UPDATE" ? "mobileNumber" : "form")
+        }
         onSpeakAgain={() => setScreen("voice")}
         onBack={() => setScreen("voice")}
       />
@@ -103,8 +110,7 @@ function App() {
         onBack={() => setScreen("confirm")}
       />
     );
-  }
-  else if (screen === "mobileNumber") {
+  } else if (screen === "mobileNumber") {
     content = (
       <MobileNumberScreen
         language={language}
@@ -124,59 +130,32 @@ function App() {
         onStartOver={resetToStart}
         onBack={() => setScreen("mobileNumber")}
       />
-    );}
-
-  
-   else if (screen === "staff") {
+    );
+  } else if (screen === "staff") {
     content = <StaffScreen language={language} onBack={() => setScreen("welcome")} />;
   } else {
+    // welcome (default)
+    newUI = true;
     content = (
-      <div className="kiosk">
-        <h1 className="title">BANKMATE</h1>
-        <p className="subtitle">
-          {language === "hi"
-            ? "बिना पढ़े-लिखे भी आसान बैंकिंग"
-            : "Banking without the literacy barrier"}
-        </p>
-
-        {error && (
-          <p style={{ color: "#f87171", marginBottom: "1em" }}>
-            {t("कुछ गलत हो गया, फिर कोशिश करें", "Something went wrong, please try again")}
-          </p>
-        )}
-
-        <div className="lang-toggle">
-          <button
-            className={`lang-btn ${language === "hi" ? "active" : ""}`}
-            onClick={() => setLanguage("hi")}
-          >
-            हिन्दी
-          </button>
-          <button
-            className={`lang-btn ${language === "en" ? "active" : ""}`}
-            onClick={() => setLanguage("en")}
-          >
-            English
-          </button>
-        </div>
-
-        <button
-          className="start-btn"
-          disabled={!language}
-          onClick={() => setScreen("camera")}
-        >
-          {language === "hi" ? "शुरू करें" : "START"}
-        </button>
-      </div>
+      <WelcomeScreen
+        lang={language}
+        setLang={setLanguage}
+        onStart={() => setScreen("camera")}
+        onStaff={() => setScreen("staff")}
+      />
     );
   }
 
+  // The floating staff button is only needed on screens not yet migrated
+  // (migrated screens have "Call Staff" in their header).
+  const showFloatingStaff = !newUI && screen !== "staff" && language;
+
   return (
     <>
-      {content}
-      {screen !== "staff" && language && (
+      {newUI ? <div className="bm-app">{content}</div> : content}
+      {showFloatingStaff && (
         <button className="staff-btn" onClick={() => setScreen("staff")}>
-           {t("सहायता चाहिए?", "Need Staff Assistance?")}
+          {t("सहायता चाहिए?", "Need Staff Assistance?")}
         </button>
       )}
     </>
